@@ -163,6 +163,18 @@ public class SubmissionService : ISubmissionService
 		};
 	}
 
+	private async Task<Guid> GetOrAddCodec(HardwareVisualizerDataContext db, string codecName)
+	{
+		var findCodec = db.HardwareCodecs.Local.FirstOrDefault(e => e.Identifier == codecName)
+		                ?? await db.HardwareCodecs.FirstOrDefaultAsync(e => e.Identifier == codecName);
+		if (findCodec == null)
+		{
+			findCodec = new HardwareCodec() { Id = Guid.NewGuid(), Identifier = codecName, Name = codecName };
+			db.HardwareCodecs.Add(findCodec);
+		}
+
+		return findCodec.Id;
+	}
 
 	private async Task<Guid> GetOrAddResolution(HardwareVisualizerDataContext db, string resolutionName)
 	{
